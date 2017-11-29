@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+  <html>
+    <head>
+      <!--Import Google Icon Font-->
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+      <!--Import materialize.css-->
+      <link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
+
+      <!--Let browser know website is optimized for mobile-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+      <link rel="stylesheet" href="css/style.css">
+      <title>Random images</title>
+    </head>
+
+    <body>
+
+      <nav>
+        <div class="nav-wrapper">
+          
+        </div>
+     </nav>
+
+
+     <div class="container center-align">
+     <h1></h1> 
+     <div class="row">
+      <canvas height='480' width='480' id='example'></canvas>
+      
+            <div id="buttons">
+             <a class="waves-effect waves-light black btn-large" id="refresh">New Quotes</a> 
+            </div>
+      </div>
+    </div>
+
+
+    <footer class="page-footer">
+      <div class="footer-copyright">
+        <div class="container">
+          ©Igor Katselenbogen 2017
+        </div>
+      </div>
+    </footer>
+      <!--Import jQuery before materialize.js-->
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="js/materialize.min.js"></script>
+<script type="text/javascript" src="http://scriptjava.net/source/scriptjava/scriptjava.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript">      
+    
+  $(document).ready(function(){
+    var example = document.getElementById("example"),
+    ctx = example.getContext('2d'), // Контекст
+    pic = new Image();              // "Создаём" изображение
+    pic.src = 'https://picsum.photos/480/?random';  // Источник изображения, позаимствовано на хабре
+    pic.onload = function() {    // Событие onLoad, ждём момента пока загрузится изображение
+    ctx.drawImage(pic, 0, 0);
+    ctx.strokeStyle = "#000000";
+    ctx.fillStyle = "#FFFFFF";
+    
+    ctx.font = "30pt Tahoma";
+    randomQuote();
+  }
+  
+  function wrapText(context, text, marginLeft, marginTop, maxWidth, lineHeight)
+    {
+      var words = text.split(" ");
+      var countWords = words.length;
+      var line = "";
+      for (var n = 0; n < countWords; n++) {
+        var testLine = line + words[n] + " ";
+        var testWidth = context.measureText(testLine).width;
+        if (testWidth > maxWidth) {
+          context.fillText(line, marginLeft, marginTop);
+          context.strokeText(line, marginLeft, marginTop);
+          line = words[n] + " ";
+          marginTop += lineHeight;
+        }
+        else {
+          line = testLine;
+        }
+      }
+      context.fillText(line, marginLeft, marginTop);
+      context.strokeText(line, marginLeft, marginTop);
+    }
+
+  function randomQuote() {
+    $.ajax({
+      url: "https://api.forismatic.com/api/1.0/?",
+      dataType: "jsonp",
+      data: "method=getQuote&format=jsonp&lang=en&jsonp=?",
+      success: function( response ) { 
+        wrapText(ctx, response.quoteText, 40, 40, 400, 40);
+      }
+    });
+  }
+     
+  $("#new-quote").click(function(){
+    randomQuote();
+  });
+  $("#refresh").click(function(){
+    ctx.clearRect(0, 0, 480, 480);
+    pic = new Image();           
+    pic.src    ="https://picsum.photos/480?image="+ Math.floor(Math.random() * (1000)); 
+    pic.onload = function() {    // Событие onLoad, ждём момента пока загрузится изображение
+      ctx.drawImage(pic, 0, 0);
+      randomQuote();
+    }
+  })
+});//End of document function
+</script>
+</script>
+</body>
+</html>
+
